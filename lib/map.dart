@@ -126,26 +126,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 void helper(geoPoint) async {
-  // TODO: send request to ML-model
-  print("TODO: send request to ML-model");
-  await http.get(Uri.parse('http://131.159.196.32:8000/api/issues'));
+  var url = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/a4ed6cfa-732d-4bd4-bb98-6ea024bcea47/classify/iterations/Iteration1/url';
+  Future<http.Response> predict() {
+    return http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Prediction-Key': '516b518763a849859a26aa982bd4b658'
+        },
+      body: jsonEncode(<String, String>{
+        "Url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Garching_Bundesautobahn_9.jpg"
+      }),
+    );
+  }
+  String tagName = "footway";
+  await predict().then((resp) => {tagName = (json.decode(resp.body)["predictions"][0]["tagName"]) == "Street" ? "footway": "primary"});
+  print(tagName);
 
 
-  // let apiUrl = "https://studentcustomvision-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/3ffcf92d-eaab-4841-82c6-9c1116bc65ef/classify/iterations/HighPrecisionModelFinal/url";
-  //     const response = await fetch(apiUrl, {
-  //         method: "POST",
-  //         headers: {
-  //             'Prediction-Key': 'c4e91f529cc24912a0ecc45339b04679',
-  //             'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({"Url": images[currentImage].image_url})
-  //     })
-  //         .then((response) => {
-  //             let data = response.json();
-  //             console.log(data);
-  //             return data
-  //         })
-  // TODO: send post to update database with solved_by_id
   mapController.removeMarker(geoPoint).then(
     (unused) => {
       mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(
@@ -157,9 +155,9 @@ void helper(geoPoint) async {
     }
   );
   
-  String email="admin@mail.com";
-  String password="admin12345";
-  var url = 'http://131.159.196.32:8000/api/issues/edit/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/';
+  // String email="admin@mail.com";
+  // String password="admin12345";
+  url = 'http://131.159.196.32:8000/api/issues/edit/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/';
   Future<http.Response> createAlbum() {
   return http.patch(
     Uri.parse(url),
@@ -167,7 +165,8 @@ void helper(geoPoint) async {
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, int>{
-      'solved_by_id': 1,
+      'solved_by_id': 1
+      // 'highway': tagName
     }),
   );}
 
