@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:location/location.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,11 +31,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-
-  @override
-  initState() {
-    print("initState Called");
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -43,6 +39,31 @@ class _MyHomePageState extends State<MyHomePage> {
                             initPosition: GeoPoint(latitude: 14.599512, longitude: 120.984222),
                             areaLimit: const BoundingBox.world(),
                        );
+
+  var location = new Location();
+
+  Future<LocationData> _getLocation() async {
+    // var currentLocation = <String, double>{};
+    var currentLocation;
+    try {
+      currentLocation = await location.getLocation();
+    } catch (e) {
+      print(e);
+      currentLocation = null;
+    }
+    return currentLocation;
+  }
+
+  @override
+  initState() {
+    // super.initState();
+    print("initState Called");
+    // add a geopoint in munich
+    // mapController.addMarker(GeoPoint(latitude: 48.1351, longitude: 11.5820));
+    _getLocation().then((value) async {await mapController.addMarker(GeoPoint(latitude: value.latitude! + 1, longitude: value.longitude!));});
+    // set marker in london
+    // _getLocation().then(() async {await mapController.addMarker(GeoPoint(latitude: 51.5074, longitude: 0.1278));});
+  }
 
   @override
   Widget build(BuildContext context) {
