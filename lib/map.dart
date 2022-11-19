@@ -95,7 +95,23 @@ class _MyHomePageState extends State<MyHomePage> {
       for (var pointOfInterest in await futurePointofInterest) {
         print(pointOfInterest.latitude);
         print(pointOfInterest.longitude);
-        mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude));
+        mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
+        markerIcon: pointOfInterest.userID == null ?
+        (const MarkerIcon(
+          icon: Icon(
+            Icons.person_pin_circle,
+            color: Colors.green,
+            size: 56,
+          ),
+        ))
+        :
+        (const MarkerIcon(
+          icon: Icon(
+            Icons.person_pin_circle,
+            color: Colors.red,
+            size: 56,
+          ),
+        )));
       }
     });
     
