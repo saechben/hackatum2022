@@ -60,7 +60,7 @@ class OSMIssueListAPIView(generics.ListAPIView):
     serializer_class = OSMIssueSerializer
 
     # def get_queryset(self):
-    #     query_set = OSM.objects.filter(id__in=random_id_list)
+    #     query_set = OSM.objects.all()(id__in=random_id_list)
     #     return query_set
 
 

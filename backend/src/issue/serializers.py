@@ -3,12 +3,12 @@ from .models import OSMIssue
 
 class OSMIssueSerializer(serializers.ModelSerializer):
 
-    lan = serializers.FloatField(required=True)
-    lat = serializers.FloatField(required=True)
+    longitude = serializers.FloatField(source="lan", required=True)
+    latitude = serializers.FloatField(source="lat", required=True)
     osm_way_id = serializers.IntegerField(required=True)
     highway = serializers.CharField(required=True)
-    # solved_by = serializers.(required=True)
+    solved_by_id = serializers.PrimaryKeyRelatedField(source='solved_by', allow_null=True, read_only=True)
 
     class Meta:
         model = OSMIssue
-        fields = ['lan', 'lat', 'osm_way_id', 'highway']
+        fields = ['longitude', 'latitude', 'osm_way_id', 'solved_by_id', 'highway']
