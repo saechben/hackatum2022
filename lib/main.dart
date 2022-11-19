@@ -4,11 +4,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
+
 // fetch from localhost and creat PointOfInterest from response.body
-Future<PointOfInterest> fetchPointOfInterest()async{
-  final response = await http.get(Uri.parse('http://localhost:3000'));
+Future<List<PointOfInterest>> fetchPointOfInterest()async{
+  final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/issues/?format=json'));
   if(response.statusCode == 200){
-    return PointOfInterest.fromJson(json.decode(response.body));
+    var list = json.decode(response.body);
+    var pointOfInterestList = list.map<PointOfInterest>((json) => PointOfInterest.fromJson(json)).toList();
+    return pointOfInterestList;
   }else{
     throw Exception('Failed to load PointOfInterest');
   }
@@ -17,29 +20,27 @@ Future<PointOfInterest> fetchPointOfInterest()async{
 class PointOfInterest{
   final double longitude;
   final double latitude;
-  final bool solved;
   final int? userID;
   final int oSMway;
 
     const PointOfInterest({
       required this.longitude,
       required this.latitude,
-      required this.solved,
       required this.userID,
       required this.oSMway,
     });
 
     factory PointOfInterest.fromJson(Map<String,dynamic>json){
+      print(json);
       return PointOfInterest(
         longitude: json['longitude'],
         latitude: json['latitude'],
-        solved: json['solved'],
-        userID: json['userid'],
-        oSMway: json['osmway'],
-      
+        userID: json['solved_by_id'],
+        oSMway: json['osm_way_id'],
       );
     }
 }
+
 void main() {
   runApp(const MyApp());
   // await controller.addMarker(GeoPoint,markerIcon:MarkerIcon,angle:pi/3);
@@ -72,6 +73,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late Future<List<PointOfInterest>> futurePointofInterest;
+
    MapController mapController = MapController(
                             initMapWithUserPosition: true,
                             initPosition: GeoPoint(latitude: 14.599512, longitude: 120.984222),
@@ -87,11 +90,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     // super.initState();
-    print("initState Called");
+
+    futurePointofInterest = fetchPointOfInterest();
+    // print(futurePointofInterest);
 
     async_sleep(1).then((unused) async {
-      mapController.addMarker(GeoPoint(latitude: 51.5074, longitude: 0.1278));
-      mapController.addMarker(GeoPoint(latitude: 52.5074, longitude: 0.1278));});
+      // for all point of interest add marker with latitude and longitude
+      for (var pointOfInterest in await futurePointofInterest) {
+        print(pointOfInterest.latitude);
+        print(pointOfInterest.longitude);
+        mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude));
+      }
+    });
     
   }
 
