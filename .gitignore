@@ -46,7 +46,7 @@ app.*.map.json
 
 Scripts
 Include
-Lib
+backend/Lib
 pyvenv.cfg
 
 # Django #
@@ -107,7 +107,7 @@ dist/
 downloads/ 
 eggs/ 
 .eggs/ 
-lib/ 
+backend/lib/ 
 lib64/ 
 parts/ 
 sdist/ 

@@ -1,152 +1,55 @@
-import 'dart:io';
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:http/http.dart' as http;
-// fetch from localhost and creat PointOfInterest from response.body
-Future<PointOfInterest> fetchPointOfInterest()async{
-  final response = await http.get(Uri.parse('http://localhost:3000'));
-  if(response.statusCode == 200){
-    return PointOfInterest.fromJson(json.decode(response.body));
-  }else{
-    throw Exception('Failed to load PointOfInterest');
-  }
-}
+import 'package:flutter/cupertino.dart';
+import 'map.dart';
+import 'leaderboard.dart';
 
-class PointOfInterest{
-  final double longitude;
-  final double latitude;
-  final bool solved;
-  final int? userID;
-  final int oSMway;
+void main() => runApp(const CupertinoTabBarApp());
 
-    const PointOfInterest({
-      required this.longitude,
-      required this.latitude,
-      required this.solved,
-      required this.userID,
-      required this.oSMway,
-    });
-
-    factory PointOfInterest.fromJson(Map<String,dynamic>json){
-      return PointOfInterest(
-        longitude: json['longitude'],
-        latitude: json['latitude'],
-        solved: json['solved'],
-        userID: json['userid'],
-        oSMway: json['osmway'],
-      
-      );
-    }
-}
-void main() {
-  runApp(const MyApp());
-  // await controller.addMarker(GeoPoint,markerIcon:MarkerIcon,angle:pi/3);
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+class CupertinoTabBarApp extends StatelessWidget {
+  const CupertinoTabBarApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Wormhole Demo',
-      theme: ThemeData(
-
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Wormhole Demo Home Page'),
+    return const CupertinoApp(
+      theme: CupertinoThemeData(brightness: Brightness.light),
+      home: CupertinoTabBarExample(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-   MapController mapController = MapController(
-                            initMapWithUserPosition: true,
-                            initPosition: GeoPoint(latitude: 14.599512, longitude: 120.984222),
-                            areaLimit: const BoundingBox.world(),
-                       );
-
-  Future<int> async_sleep(time) async {
-      // sleep 1 second
-      await Future.delayed(Duration(seconds: time));
-      return time;
-    }
-
-  @override
-  initState() {
-    // super.initState();
-    print("initState Called");
-
-    async_sleep(1).then((unused) async {
-      mapController.addMarker(GeoPoint(latitude: 51.5074, longitude: 0.1278));
-      mapController.addMarker(GeoPoint(latitude: 52.5074, longitude: 0.1278));});
-    
-  }
+class CupertinoTabBarExample extends StatelessWidget {
+  const CupertinoTabBarExample({super.key});
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-
-        title: Text(widget.title),
+    return CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.map),
+            label: 'Map',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.rosette),
+            label: 'Leaderboard',
+          ),
+        ],
       ),
-      body: Stack(
-          children: <Widget>[
-            OSMFlutter( 
-              controller: mapController,
-              trackMyPosition: true,
-              initZoom: 15,
-              stepZoom: 1.0,
-              userLocationMarker: UserLocationMaker(
-                  personMarker: const MarkerIcon(
-                      icon: Icon(
-                          Icons.location_history_rounded,
-                          color: Colors.red,
-                          size: 48,
-                      ),
-                  ),
-                  directionArrowMarker: const MarkerIcon(
-                      icon: Icon(
-                          Icons.double_arrow,
-                          size: 48,
-                      ),
-                  ),
-              ),
-              roadConfiguration: RoadConfiguration(
-                      startIcon: const MarkerIcon(
-                        icon: Icon(
-                          Icons.person,
-                          size: 64,
-                          color: Colors.brown,
-                        ),
-                      ),
-                      roadColor: Colors.yellowAccent,
-              ),
-              markerOption: MarkerOption(
-                  defaultMarker: const MarkerIcon(
-                      icon: Icon(
-                        Icons.person_pin_circle,
-                        color: Colors.blue,
-                        size: 56,
-                        ),
-                      )
-              ),
-          ) 
-          ],
-        ),
+      tabBuilder: (BuildContext context, int index) {
+        return CupertinoTabView(
+          builder: (BuildContext context) {
+            return Center(
+              child: showPage(index)
+            );
+          },
+        );
+      },
     );
+  }
+  showPage(int index){
+     if(index == 0){
+        return MyApp();
+     }else{
+        return Leaderboard();
+     }
   }
 }
