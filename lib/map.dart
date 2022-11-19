@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 // fetch from localhost and creat PointOfInterest from response.body
 Future<List<PointOfInterest>> fetchPointOfInterest()async{
-  final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/issues/?format=json'));
+  final response = await http.get(Uri.parse('http://131.159.196.32:8000/api/issues'));
   if(response.statusCode == 200){
     var list = json.decode(response.body);
     var pointOfInterestList = list.map<PointOfInterest>((json) => PointOfInterest.fromJson(json)).toList();
@@ -98,18 +98,17 @@ class _MyHomePageState extends State<MyHomePage> {
         mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
         markerIcon: pointOfInterest.userID == null ?
         (const MarkerIcon(
-          icon: Icon(
-            Icons.person_pin_circle,
-            color: Colors.green,
-            size: 56,
-          ),
+           iconWidget: CircleAvatar(
+              radius: 30,
+              backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
+            )
         ))
         :
-        (const MarkerIcon(
+        (const MarkerIcon(         
           icon: Icon(
-            Icons.person_pin_circle,
-            color: Colors.red,
-            size: 56,
+            Icons.construction,
+            color: Color.fromARGB(255, 191, 32, 21),
+            size: 66,
           ),
         )));
       }
