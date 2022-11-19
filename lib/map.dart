@@ -219,11 +219,11 @@ void helper(geoPoint) async {
               ),
               onGeoPointClicked: (geoPoint) {
                 // compare distance between user and point of interest
-                print("LISTENING");
-                  var s = null;
+                // print("LISTENING");
+                //   var s = null;
                   Geolocator.getCurrentPosition().then((position) => {
                     distance2point(geoPoint, GeoPoint(latitude: position.latitude, longitude: position.longitude)).then((distance) => {
-                      print(distance),
+                      // print(distance),
                       if(distance < 100){
                         helper(geoPoint)
                       }
