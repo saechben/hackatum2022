@@ -18,15 +18,15 @@ class PointOfInterest{
   final double longitude;
   final double latitude;
   final bool solved;
-  final int? UserID;
-  final int OSMway;
+  final int? userID;
+  final int oSMway;
 
     const PointOfInterest({
       required this.longitude,
       required this.latitude,
       required this.solved,
-      required this.UserID,
-      required this.OSMway,
+      required this.userID,
+      required this.oSMway,
     });
 
     factory PointOfInterest.fromJson(Map<String,dynamic>json){
@@ -34,8 +34,8 @@ class PointOfInterest{
         longitude: json['longitude'],
         latitude: json['latitude'],
         solved: json['solved'],
-        UserID: json['userid'],
-        OSMway: json['osmway'],
+        userID: json['userid'],
+        oSMway: json['osmway'],
       
       );
     }
