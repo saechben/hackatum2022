@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'map.dart';
+import 'leaderboard.dart';
 
 void main() => runApp(const CupertinoTabBarApp());
 
@@ -36,12 +37,19 @@ class CupertinoTabBarExample extends StatelessWidget {
       tabBuilder: (BuildContext context, int index) {
         return CupertinoTabView(
           builder: (BuildContext context) {
-            return const Center(
-              child: MyApp(),
+            return Center(
+              child: showPage(index)
             );
           },
         );
       },
     );
+  }
+  showPage(int index){
+     if(index == 0){
+        return MyApp();
+     }else{
+        return Leaderboard();
+     }
   }
 }
