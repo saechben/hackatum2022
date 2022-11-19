@@ -30,6 +30,11 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+
+  @override
+  initState() {
+    print("initState Called");
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
