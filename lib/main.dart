@@ -1,8 +1,45 @@
 import 'dart:io';
-
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:http/http.dart' as http;
+// fetch from localhost and creat PointOfInterest from response.body
+Future<PointOfInterest> fetchPointOfInterest()async{
+  final response = await http.get(Uri.parse('http://localhost:3000'));
+  if(response.statusCode == 200){
+    return PointOfInterest.fromJson(json.decode(response.body));
+  }else{
+    throw Exception('Failed to load PointOfInterest');
+  }
+}
 
+class PointOfInterest{
+  final double longitude;
+  final double latitude;
+  final bool solved;
+  final int? UserID;
+  final int OSMway;
+
+    const PointOfInterest({
+      required this.longitude,
+      required this.latitude,
+      required this.solved,
+      required this.UserID,
+      required this.OSMway,
+    });
+
+    factory PointOfInterest.fromJson(Map<String,dynamic>json){
+      return PointOfInterest(
+        longitude: json['longitude'],
+        latitude: json['latitude'],
+        solved: json['solved'],
+        UserID: json['userid'],
+        OSMway: json['osmway'],
+      
+      );
+    }
+}
 void main() {
   runApp(const MyApp());
   // await controller.addMarker(GeoPoint,markerIcon:MarkerIcon,angle:pi/3);
