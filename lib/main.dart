@@ -24,20 +24,12 @@ class CupertinoTabBarExample extends StatelessWidget {
       tabBar: CupertinoTabBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.star_fill),
-            label: 'Favourites',
+            icon: Icon(CupertinoIcons.map),
+            label: 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.clock_solid),
-            label: 'Recents',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.person_alt_circle_fill),
-            label: 'Contacts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.circle_grid_3x3_fill),
-            label: 'Keypad',
+            icon: Icon(CupertinoIcons.rosette),
+            label: 'Leaderboard',
           ),
         ],
       ),
