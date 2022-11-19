@@ -75,11 +75,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late Future<List<PointOfInterest>> futurePointofInterest;
 
-   MapController mapController = MapController(
-                            initMapWithUserPosition: true,
-                            initPosition: GeoPoint(latitude: 14.599512, longitude: 120.984222),
-                            areaLimit: const BoundingBox.world(),
-                       );
+  MapController mapController = MapController(
+                          initMapWithUserPosition: true,
+                          initPosition: GeoPoint(latitude: 14.599512, longitude: 120.984222),
+                          areaLimit: const BoundingBox.world(),
+                      );
 
   Future<int> async_sleep(time) async {
       // sleep 1 second
@@ -97,8 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
     async_sleep(1).then((unused) async {
       // for all point of interest add marker with latitude and longitude
       for (var pointOfInterest in await futurePointofInterest) {
-        print(pointOfInterest.latitude);
-        print(pointOfInterest.longitude);
         mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude));
       }
     });
