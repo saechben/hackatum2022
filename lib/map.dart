@@ -32,7 +32,6 @@ class PointOfInterest{
     });
 
     factory PointOfInterest.fromJson(Map<String,dynamic>json){
-      print(json);
       return PointOfInterest(
         longitude: json['longitude'],
         latitude: json['latitude'],
@@ -118,13 +117,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
 void helper(geoPoint) async {
   // TODO: send request to ML-model
-  print("a");
+  print("TODO: send request to ML-model");
   // TODO: send post to update database with solved_by_id
   mapController.removeMarker(geoPoint).then(
     (unused) => {
       mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.green,size: 80,),),)
     }
   );
+  print("TODO: send post to db");
 }
 
   @override
@@ -174,18 +174,14 @@ void helper(geoPoint) async {
                 // compare distance between user and point of interest
                 print("LISTENING");
                   var s = null;
-                  mapController.getCurrentPositionAdvancedPositionPicker().then((position) => {
-                    distance2point(geoPoint, position).then((distance) => {
+                  Geolocator.getCurrentPosition().then((position) => {
+                    distance2point(geoPoint, GeoPoint(latitude: position.latitude, longitude: position.longitude)).then((distance) => {
                       print(distance),
-                      if(distance < 0.0001){
+                      if(distance < 100){
                         helper(geoPoint)
                       }
                     })
                   });
-                  
-                  // await distance2point(geoPoint, );
-                  // await controller.removeMarker(geoPoint);
-                  // await controller.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.red,size: 80,),),);
                 },
           ) 
           ],
