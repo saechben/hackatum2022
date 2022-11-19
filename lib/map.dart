@@ -124,7 +124,26 @@ void helper(geoPoint) async {
       mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.green,size: 80,),),)
     }
   );
-  print("TODO: send post to db");
+  
+  String email="admin@mail.com";
+  String password="admin12345";
+  const url = 'http://127.0.0.1:8000/api/issues/edit';
+
+  Future<http.Response> createAlbum() {
+  return http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'longitude': geoPoint.longitude.toString(),
+      'latitude': geoPoint.latitude.toString(),
+      'solved_by_id': "1",
+    }),
+  );}
+
+  createAlbum().then((resp) => {print(resp.body)});
+
 }
 
   @override
