@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ping, LevelDetailAPIView, CTImageListAPIView, CTImageForCategory, UserDetailAPIView, UserStatisticsList, UserStatisticsUpdate, OSMIssueListAPIView
+from .views import ping, LevelDetailAPIView, CTImageListAPIView, CTImageForCategory, UserDetailAPIView, UserStatisticsList, UserStatisticsUpdate, OSMIssueListAPIView, OSMIssueUpdate
 
 app_name="api"
 
@@ -12,4 +12,5 @@ urlpatterns = [
     path('leaderboard/', UserStatisticsList.as_view()),
     path('statistics/edit/<int:id>/', UserStatisticsUpdate.as_view()),
     path('issues/', OSMIssueListAPIView.as_view()),
+    path('issues/edit/<str:longitude>;<str:latitude>/', OSMIssueUpdate.as_view()),
 ]

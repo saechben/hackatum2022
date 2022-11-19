@@ -115,3 +115,12 @@ class UserStatisticsUpdate(generics.RetrieveUpdateAPIView):
         user_id = self.kwargs["id"]
         user = get_object_or_404(CustomUser, id=user_id)
         return user.statistics
+
+"""Django Rest Framework Generic Detail API View""" 
+class OSMIssueUpdate(generics.RetrieveUpdateAPIView):
+    serializer_class = OSMIssueSerializer
+    def get_object(self):
+        longitude = float(self.kwargs["longitude"])
+        latitude = float(self.kwargs["latitude"])
+        issue = OSMIssue.objects.filter(lan=longitude, lat=latitude).first()
+        return issue

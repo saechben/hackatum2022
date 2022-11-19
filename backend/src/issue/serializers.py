@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import OSMIssue
+from users.models import CustomUser
 
 class OSMIssueSerializer(serializers.ModelSerializer):
 
@@ -7,7 +8,7 @@ class OSMIssueSerializer(serializers.ModelSerializer):
     latitude = serializers.FloatField(source="lat", required=True)
     osm_way_id = serializers.IntegerField(required=True)
     highway = serializers.CharField(required=True)
-    solved_by_id = serializers.PrimaryKeyRelatedField(source='solved_by', allow_null=True, read_only=True)
+    solved_by_id = serializers.PrimaryKeyRelatedField(source="solved_by", queryset=CustomUser.objects.all())
 
     class Meta:
         model = OSMIssue

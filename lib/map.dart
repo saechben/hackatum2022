@@ -18,6 +18,17 @@ Future<List<PointOfInterest>> fetchPointOfInterest()async{
   }
 }
 
+Future<List<PointOfInterest>> predictImage() async{
+  final response = await http.get(Uri.parse('http://131.159.196.32:8000/api/issues'));
+  if(response.statusCode == 200){
+    var list = json.decode(response.body);
+    var pointOfInterestList = list.map<PointOfInterest>((json) => PointOfInterest.fromJson(json)).toList();
+    return pointOfInterestList;
+  }else{
+    throw Exception('Failed to load PointOfInterest');
+  }
+}
+
 class PointOfInterest{
   final double longitude;
   final double latitude;
@@ -93,8 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
     async_sleep(1).then((unused) async {
       // for all point of interest add marker with latitude and longitude
       for (var pointOfInterest in await futurePointofInterest) {
-        mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
-        markerIcon: pointOfInterest.userID == null ?
+        await mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
+        markerIcon: pointOfInterest.userID != null ?
         (const MarkerIcon(
            iconWidget: CircleAvatar(
               radius: 30,
@@ -117,27 +128,46 @@ class _MyHomePageState extends State<MyHomePage> {
 void helper(geoPoint) async {
   // TODO: send request to ML-model
   print("TODO: send request to ML-model");
+  await http.get(Uri.parse('http://131.159.196.32:8000/api/issues'));
+
+
+  // let apiUrl = "https://studentcustomvision-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/3ffcf92d-eaab-4841-82c6-9c1116bc65ef/classify/iterations/HighPrecisionModelFinal/url";
+  //     const response = await fetch(apiUrl, {
+  //         method: "POST",
+  //         headers: {
+  //             'Prediction-Key': 'c4e91f529cc24912a0ecc45339b04679',
+  //             'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({"Url": images[currentImage].image_url})
+  //     })
+  //         .then((response) => {
+  //             let data = response.json();
+  //             console.log(data);
+  //             return data
+  //         })
   // TODO: send post to update database with solved_by_id
   mapController.removeMarker(geoPoint).then(
     (unused) => {
-      mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.green,size: 80,),),)
+      mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(
+           iconWidget: CircleAvatar(
+              radius: 30,
+              backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
+            )
+        ))
     }
   );
   
   String email="admin@mail.com";
   String password="admin12345";
-  const url = 'http://127.0.0.1:8000/api/issues/edit';
-
+  var url = 'http://131.159.196.32:8000/api/issues/edit/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/';
   Future<http.Response> createAlbum() {
-  return http.post(
+  return http.patch(
     Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, String>{
-      'longitude': geoPoint.longitude.toString(),
-      'latitude': geoPoint.latitude.toString(),
-      'solved_by_id': "1",
+    body: jsonEncode(<String, int>{
+      'solved_by_id': 1,
     }),
   );}
 
