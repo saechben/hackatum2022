@@ -39,6 +39,7 @@ dependencies:
   flutter_osm_plugin: ^0.40.3+2
   location: ^4.2.0
   http: ^0.13.5
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:

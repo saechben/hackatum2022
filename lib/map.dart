@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
 // fetch from localhost and creat PointOfInterest from response.body
 Future<List<PointOfInterest>> fetchPointOfInterest()async{
@@ -21,22 +22,21 @@ class PointOfInterest{
   final double longitude;
   final double latitude;
   final int? userID;
-  final int oSMway;
+  // final int oSMway;
 
     const PointOfInterest({
       required this.longitude,
       required this.latitude,
       required this.userID,
-      required this.oSMway,
+      // required this.oSMway,
     });
 
     factory PointOfInterest.fromJson(Map<String,dynamic>json){
-      print(json);
       return PointOfInterest(
         longitude: json['longitude'],
         latitude: json['latitude'],
         userID: json['solved_by_id'],
-        oSMway: json['osm_way_id'],
+        // oSMway: json['osm_way_id'],
       );
     }
 }
@@ -93,8 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
     async_sleep(1).then((unused) async {
       // for all point of interest add marker with latitude and longitude
       for (var pointOfInterest in await futurePointofInterest) {
-        print(pointOfInterest.latitude);
-        print(pointOfInterest.longitude);
         mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
         markerIcon: pointOfInterest.userID == null ?
         (const MarkerIcon(
@@ -116,6 +114,37 @@ class _MyHomePageState extends State<MyHomePage> {
     
   }
 
+void helper(geoPoint) async {
+  // TODO: send request to ML-model
+  print("TODO: send request to ML-model");
+  // TODO: send post to update database with solved_by_id
+  mapController.removeMarker(geoPoint).then(
+    (unused) => {
+      mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.green,size: 80,),),)
+    }
+  );
+  
+  String email="admin@mail.com";
+  String password="admin12345";
+  const url = 'http://127.0.0.1:8000/api/issues/edit';
+
+  Future<http.Response> createAlbum() {
+  return http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'longitude': geoPoint.longitude.toString(),
+      'latitude': geoPoint.latitude.toString(),
+      'solved_by_id': "1",
+    }),
+  );}
+
+  createAlbum().then((resp) => {print(resp.body)});
+
+}
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -130,13 +159,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(
                           Icons.location_history_rounded,
                           color: Colors.red,
-                          size: 48,
+                          size: 80,
                       ),
                   ),
                   directionArrowMarker: const MarkerIcon(
                       icon: Icon(
                           Icons.double_arrow,
-                          size: 48,
+                          size: 80,
                       ),
                   ),
               ),
@@ -144,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       startIcon: const MarkerIcon(
                         icon: Icon(
                           Icons.person,
-                          size: 64,
+                          size: 80,
                           color: Colors.brown,
                         ),
                       ),
@@ -155,10 +184,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(
                         Icons.person_pin_circle,
                         color: Colors.blue,
-                        size: 56,
+                        size: 80,
                         ),
                       )
               ),
+              onGeoPointClicked: (geoPoint) {
+                // compare distance between user and point of interest
+                print("LISTENING");
+                  var s = null;
+                  Geolocator.getCurrentPosition().then((position) => {
+                    distance2point(geoPoint, GeoPoint(latitude: position.latitude, longitude: position.longitude)).then((distance) => {
+                      print(distance),
+                      if(distance < 100){
+                        helper(geoPoint)
+                      }
+                    })
+                  });
+                },
           ) 
           ],
     );
