@@ -47,8 +47,8 @@ class CupertinoTabBarExample extends StatelessWidget {
   }
   showPage(int index){
      if(index == 0){
-        return MyApp();
-     }else{
+        return HomePage();
+     } else {
         return Leaderboard();
      }
   }

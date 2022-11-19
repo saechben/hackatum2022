@@ -1,167 +1,75 @@
-import 'dart:io';
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
-// fetch from localhost and creat PointOfInterest from response.body
-Future<List<PointOfInterest>> fetchPointOfInterest()async{
-  final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/issues/?format=json'));
-  if(response.statusCode == 200){
-    var list = json.decode(response.body);
-    var pointOfInterestList = list.map<PointOfInterest>((json) => PointOfInterest.fromJson(json)).toList();
-    return pointOfInterestList;
-  }else{
-    throw Exception('Failed to load PointOfInterest');
-  }
-}
+class HomePage extends StatelessWidget {
+  static const String route = '/';
 
-class PointOfInterest{
-  final double longitude;
-  final double latitude;
-  final int? userID;
-  final int oSMway;
-
-    const PointOfInterest({
-      required this.longitude,
-      required this.latitude,
-      required this.userID,
-      required this.oSMway,
-    });
-
-    factory PointOfInterest.fromJson(Map<String,dynamic>json){
-      print(json);
-      return PointOfInterest(
-        longitude: json['longitude'],
-        latitude: json['latitude'],
-        userID: json['solved_by_id'],
-        oSMway: json['osm_way_id'],
-      );
-    }
-}
-
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Wormhole Demo',
-      theme: ThemeData(
-
-        primarySwatch: Colors.blue,
+    var markers = <Marker>[
+      Marker(
+        width: 80,
+        height: 80,
+        point: LatLng(51.5, -0.09),
+        builder: (ctx) => const FlutterLogo(
+          textColor: Colors.blue,
+          key: ObjectKey(Colors.blue),
+        ),
       ),
-      home: const MyHomePage(title: 'Wormhole Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<PointOfInterest>> futurePointofInterest;
-
-   MapController mapController = MapController(
-                            initMapWithUserPosition: true,
-                            initPosition: GeoPoint(latitude: 14.599512, longitude: 120.984222),
-                            areaLimit: const BoundingBox.world(),
-                       );
-
-  Future<int> async_sleep(time) async {
-      // sleep 1 second
-      await Future.delayed(Duration(seconds: time));
-      return time;
-    }
-
-  @override
-  initState() {
-    // super.initState();
-
-    futurePointofInterest = fetchPointOfInterest();
-    // print(futurePointofInterest);
-
-    async_sleep(1).then((unused) async {
-      // for all point of interest add marker with latitude and longitude
-      for (var pointOfInterest in await futurePointofInterest) {
-        print(pointOfInterest.latitude);
-        print(pointOfInterest.longitude);
-        mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
-        markerIcon: pointOfInterest.userID == null ?
-        (const MarkerIcon(
-          icon: Icon(
-            Icons.person_pin_circle,
-            color: Colors.green,
-            size: 56,
-          ),
-        ))
-        :
-        (const MarkerIcon(
-          icon: Icon(
-            Icons.person_pin_circle,
-            color: Colors.red,
-            size: 56,
-          ),
-        )));
-      }
-    });
-    
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-          children: <Widget>[
-            OSMFlutter( 
-              controller: mapController,
-              trackMyPosition: true,
-              initZoom: 15,
-              stepZoom: 1.0,
-              userLocationMarker: UserLocationMaker(
-                  personMarker: const MarkerIcon(
-                      icon: Icon(
-                          Icons.location_history_rounded,
-                          color: Colors.red,
-                          size: 48,
-                      ),
+      Marker(
+        width: 80,
+        height: 80,
+        point: LatLng(53.3498, -6.2603),
+        builder: (ctx) => const FlutterLogo(
+          textColor: Colors.green,
+          key: ObjectKey(Colors.green),
+        ),
+      ),
+    ];
+    markers.add(
+      Marker(
+        width: 800,
+        height: 80,
+        point: LatLng(48.8566, 2.3522),
+        builder: (ctx) => const FlutterLogo(
+          textColor: Color.fromARGB(255, 119, 246, 0),
+          key: ObjectKey(Colors.purple),
+        ),
+      ),
+      
+   );
+    return Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Flexible(
+              child: FlutterMap(
+                options: MapOptions(
+                  center: LatLng(51.5, -0.09),
+                  interactiveFlags:  InteractiveFlag.all & ~InteractiveFlag.rotate,
+                  zoom: 5,
+                ),
+                nonRotatedChildren: [
+                  AttributionWidget.defaultWidget(
+                    source: 'OpenStreetMap contributors',
+                    onSourceTapped: () {},
                   ),
-                  directionArrowMarker: const MarkerIcon(
-                      icon: Icon(
-                          Icons.double_arrow,
-                          size: 48,
-                      ),
+                ],
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                   ),
+                  MarkerLayer(markers: markers),
+                ],
               ),
-              roadConfiguration: RoadConfiguration(
-                      startIcon: const MarkerIcon(
-                        icon: Icon(
-                          Icons.person,
-                          size: 64,
-                          color: Colors.brown,
-                        ),
-                      ),
-                      roadColor: Colors.yellowAccent,
-              ),
-              markerOption: MarkerOption(
-                  defaultMarker: const MarkerIcon(
-                      icon: Icon(
-                        Icons.person_pin_circle,
-                        color: Colors.blue,
-                        size: 56,
-                        ),
-                      )
-              ),
-          ) 
+            ),
           ],
+        ),
     );
   }
 }
