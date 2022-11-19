@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
 // fetch from localhost and creat PointOfInterest from response.body
 Future<List<PointOfInterest>> fetchPointOfInterest()async{
@@ -21,13 +22,13 @@ class PointOfInterest{
   final double longitude;
   final double latitude;
   final int? userID;
-  final int oSMway;
+  // final int oSMway;
 
     const PointOfInterest({
       required this.longitude,
       required this.latitude,
       required this.userID,
-      required this.oSMway,
+      // required this.oSMway,
     });
 
     factory PointOfInterest.fromJson(Map<String,dynamic>json){
@@ -36,7 +37,7 @@ class PointOfInterest{
         longitude: json['longitude'],
         latitude: json['latitude'],
         userID: json['solved_by_id'],
-        oSMway: json['osm_way_id'],
+        // oSMway: json['osm_way_id'],
       );
     }
 }
@@ -93,15 +94,13 @@ class _MyHomePageState extends State<MyHomePage> {
     async_sleep(1).then((unused) async {
       // for all point of interest add marker with latitude and longitude
       for (var pointOfInterest in await futurePointofInterest) {
-        print(pointOfInterest.latitude);
-        print(pointOfInterest.longitude);
         mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
         markerIcon: pointOfInterest.userID == null ?
         (const MarkerIcon(
           icon: Icon(
             Icons.person_pin_circle,
             color: Colors.green,
-            size: 56,
+            size: 80,
           ),
         ))
         :
@@ -109,13 +108,24 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: Icon(
             Icons.person_pin_circle,
             color: Colors.red,
-            size: 56,
+            size: 80,
           ),
         )));
       }
     });
     
   }
+
+void helper(geoPoint) async {
+  // TODO: send request to ML-model
+  print("a");
+  // TODO: send post to update database with solved_by_id
+  mapController.removeMarker(geoPoint).then(
+    (unused) => {
+      mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.green,size: 80,),),)
+    }
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -131,13 +141,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(
                           Icons.location_history_rounded,
                           color: Colors.red,
-                          size: 48,
+                          size: 80,
                       ),
                   ),
                   directionArrowMarker: const MarkerIcon(
                       icon: Icon(
                           Icons.double_arrow,
-                          size: 48,
+                          size: 80,
                       ),
                   ),
               ),
@@ -145,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       startIcon: const MarkerIcon(
                         icon: Icon(
                           Icons.person,
-                          size: 64,
+                          size: 80,
                           color: Colors.brown,
                         ),
                       ),
@@ -156,10 +166,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(
                         Icons.person_pin_circle,
                         color: Colors.blue,
-                        size: 56,
+                        size: 80,
                         ),
                       )
               ),
+              onGeoPointClicked: (geoPoint) {
+                // compare distance between user and point of interest
+                print("LISTENING");
+                  var s = null;
+                  mapController.getCurrentPositionAdvancedPositionPicker().then((position) => {
+                    distance2point(geoPoint, position).then((distance) => {
+                      print(distance),
+                      if(distance < 0.0001){
+                        helper(geoPoint)
+                      }
+                    })
+                  });
+                  
+                  // await distance2point(geoPoint, );
+                  // await controller.removeMarker(geoPoint);
+                  // await controller.addMarker(geoPoint,markerIcon:const MarkerIcon(icon: Icon(Icons.person_pin_circle,color: Colors.red,size: 80,),),);
+                },
           ) 
           ],
     );
