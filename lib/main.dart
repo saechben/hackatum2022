@@ -3,6 +3,7 @@ import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
 void main() {
   runApp(const MyApp());
+  // await controller.addMarker(GeoPoint,markerIcon:MarkerIcon,angle:pi/3);
 }
 
 class MyApp extends StatelessWidget {
@@ -12,12 +13,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Wormhole Demo',
       theme: ThemeData(
 
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Wormhole Demo Home Page'),
     );
   }
 }
