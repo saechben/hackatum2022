@@ -124,3 +124,14 @@ class OSMIssueUpdate(generics.RetrieveUpdateAPIView):
         latitude = float(self.kwargs["latitude"])
         issue = OSMIssue.objects.filter(lan=longitude, lat=latitude).first()
         return issue
+
+"""Django Rest Framework Generic Detail API View""" 
+class OSMIssueDetailAPIView(generics.RetrieveAPIView):
+    queryset = OSMIssue.objects.all()
+    serializer_class = OSMIssueSerializer
+
+    def get_object(self):
+        longitude = float(self.kwargs["longitude"])
+        latitude = float(self.kwargs["latitude"])
+        issue = OSMIssue.objects.filter(lan=longitude, lat=latitude).first()
+        return issue

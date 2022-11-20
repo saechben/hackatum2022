@@ -157,6 +157,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 void helper(geoPoint) async {
+  final response = await http.get(Uri.parse('http://131.159.196.32:8000/api/issues/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/'));
+    if(response.statusCode == 200){
+      var detail = json.decode(response.body);
+      print(detail);
+      if (detail["solved_by_id"] != null) return;
+    }else{
+      throw Exception('Failed to load PointOfInterest');
+    }
+
+
+
+
   var data = await availableCameras().then((value) async => 
     await Get.to(MaterialApp(
       theme: ThemeData.dark(),
