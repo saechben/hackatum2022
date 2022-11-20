@@ -43,8 +43,8 @@ class UserCard extends StatelessWidget {
   Widget _buildUserStats() {
     return <Widget>[
       // _buildUserStatsItem('21', 'Solved'),
-      _buildUserStatsItem('2', 'Cities captured'),
-      _buildUserStatsItem('#5', 'Ranking'),
+      _buildUserStatsItem('1', 'Cities helped'),
+      _buildUserStatsItem('#2', 'Ranking'),
     ]
         .toRow(mainAxisAlignment: MainAxisAlignment.spaceAround)
         .padding(vertical: 10);

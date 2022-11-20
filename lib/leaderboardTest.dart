@@ -1,8 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(MaterialApp(home: LeaderBoardNew()));
 
@@ -28,6 +31,37 @@ class LeaderBoardNew extends StatefulWidget {
 }
 
 class _MyAppState extends State<LeaderBoardNew> {
+  late Future<int> myScore;
+
+
+Future<int> fetchAlbum() async {
+  final response = await http.get(Uri.parse('http://131.159.196.32:8000/api/statistics/edit/1/'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return json.decode(response.body)["issues_solved"];
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load album');
+  }
+}
+@override
+void didChangeDependencies() {
+    // Provider.of<>(context)
+    super.didChangeDependencies();
+    myScore = fetchAlbum();
+    print(myScore);
+}
+
+  @override
+  initState() {
+    super.initState();
+    myScore = fetchAlbum();
+    new Timer.periodic(Duration(seconds: 2), (Timer t) => setState((){}));
+  }
+
   List<String> names = [
     "Regina Ali",
     "Keith Austin",
@@ -201,7 +235,6 @@ SliverList(
     final name = names[index];
 
     Widget listItem;
-
     if (ind == 1) {
       listItem = Card(
         margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
@@ -256,12 +289,20 @@ SliverList(
                     fontWeight: FontWeight.bold),
               ),
 SizedBox(width:  10),
-              Text(
-                "16",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              )
+                FutureBuilder<int>(
+                  future: myScore,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(snapshot.data!.toInt().toString());
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+
+                    // By default, show a loading spinner.
+                    return const CircularProgressIndicator();
+                  },
+                ),
+               
             ],
           ),
         ),
@@ -313,7 +354,7 @@ SizedBox(width:  10),
                       fontWeight: FontWeight.bold)),
                       SizedBox(width:  2),
               Text(
-                names[Random().nextInt(names.length - 1)],
+                names[ind],
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold),

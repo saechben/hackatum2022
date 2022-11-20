@@ -23,17 +23,6 @@ Future<List<PointOfInterest>> fetchPointOfInterest()async{
   }
 }
 
-Future<List<PointOfInterest>> predictImage() async{
-  final response = await http.get(Uri.parse('http://131.159.196.32:8000/api/issues'));
-  if(response.statusCode == 200){
-    var list = json.decode(response.body);
-    var pointOfInterestList = list.map<PointOfInterest>((json) => PointOfInterest.fromJson(json)).toList();
-    return pointOfInterestList;
-  } else {
-    throw Exception('Failed to load PointOfInterest');
-  }
-}
-
 class PointOfInterest{
   final double longitude;
   final double latitude;
@@ -127,22 +116,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
     futurePointofInterest = fetchPointOfInterest();
     // print(futurePointofInterest);
-
+    const t1 = MarkerIcon(
+        iconWidget: CircleAvatar(
+          radius: 44,
+          backgroundColor: Color.fromARGB(247, 239, 239, 239),
+          child: Icon(Icons.account_circle, size: 66, color: Color.fromARGB(255, 0, 0, 0),),
+        )
+    );
+    const t2 = MarkerIcon(
+        iconWidget: CircleAvatar(
+          radius: 44,
+          backgroundColor: Color.fromARGB(247, 239, 239, 239),
+          child: CircleAvatar(
+            radius: 30,
+            backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
+          ),
+        )
+    );
     async_sleep(1).then((unused) async {
       // for all point of interest add marker with latitude and longitude
       for (var pointOfInterest in await futurePointofInterest) {
         await mapController.addMarker(GeoPoint(latitude: pointOfInterest.latitude, longitude: pointOfInterest.longitude),
-        markerIcon: pointOfInterest.userID != null ?
-        (const MarkerIcon(
-           iconWidget: CircleAvatar(
-              radius: 44,
-              backgroundColor: Color.fromARGB(247, 239, 239, 239),
-              child: CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
-              ),
-            )
-        ))
+        markerIcon: pointOfInterest.userID != null ? (pointOfInterest.userID == 2 ? t2 : t1)
         :
         (const MarkerIcon(        
           iconWidget: CircleAvatar(
@@ -157,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 void helper(geoPoint) async {
-  final response = await http.get(Uri.parse('http://131.159.196.32:8000/api/issues/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/'));
+  var response = await http.get(Uri.parse('http://131.159.196.32:8000/api/issues/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/'));
     if(response.statusCode == 200){
       var detail = json.decode(response.body);
       print(detail);
@@ -207,7 +202,6 @@ void helper(geoPoint) async {
   );
 
 
-  
   // String email="admin@mail.com";
   // String password="admin12345";
   var patchData = {"solved_by_id": 1, "highway": tagName};
@@ -222,6 +216,31 @@ void helper(geoPoint) async {
   );}
 
   createAlbum().then((resp) => {_showAlertDialog(context, tagName)});
+
+  int new_amount_solved = -1;
+  response = await http.get(Uri.parse('http://131.159.196.32:8000/api/statistics/edit/1/'));
+    if(response.statusCode == 200){
+      var detail = json.decode(response.body);
+      new_amount_solved = detail["issues_solved"];
+    }else{
+      throw Exception('Failed to load PointOfInterest');
+    }
+    print(new_amount_solved);
+
+
+  
+  patchData = {"issues_solved": new_amount_solved+1};
+  url = 'http://131.159.196.32:8000/api/statistics/edit/1/';
+  Future<http.Response> updateStats() {
+  return http.patch(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(patchData),
+  );}
+
+  updateStats().then((resp) => {print("SUUCCCCCCCCCCCEEEEEEEEESSSSSSSSSS")});
 
 }
 
