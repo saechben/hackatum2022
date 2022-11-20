@@ -166,6 +166,7 @@ void helper(geoPoint) async {
   
   // String email="admin@mail.com";
   // String password="admin12345";
+  var patchData = {"solved_by_id": 1, "highway": tagName};
   url = 'http://131.159.196.32:8000/api/issues/edit/${geoPoint.longitude.toString()};${geoPoint.latitude.toString()}/';
   Future<http.Response> createAlbum() {
   return http.patch(
@@ -173,10 +174,7 @@ void helper(geoPoint) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, int>{
-      'solved_by_id': 1
-      // 'highway': tagName
-    }),
+    body: jsonEncode(patchData),
   );}
 
   createAlbum().then((resp) => {print(resp.body)});
