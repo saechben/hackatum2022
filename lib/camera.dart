@@ -49,11 +49,15 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Find the Issue!', style: TextStyle(color: Color.fromARGB(255, 35, 35, 35))), backgroundColor: Color.fromARGB(255, 229, 229, 229),),
+      backgroundColor: Color.fromARGB(255, 246, 246, 246),
+      appBar: AppBar(title: const Text('', style: TextStyle(color: Color.fromARGB(255, 35, 35, 35))), backgroundColor: Color.fromARGB(255, 229, 229, 229),),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
-      body: FutureBuilder<void>(
+      body: Container (
+            // Even margin on all sides
+            margin: EdgeInsets.all(0.0),
+            child: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
@@ -64,29 +68,33 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             return const Center(child: CircularProgressIndicator());
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        // Provide an onPressed callback.
-        onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
+      )),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton:  Padding(
+            padding: const EdgeInsets.only(bottom: 50.0),
+            child: FloatingActionButton(
+          backgroundColor: Color.fromARGB(255, 70, 129, 255),
+          // Provide an onPressed callback.
+          onPressed: () async {
+            // Take the Picture in a try / catch block. If anything goes wrong,
+            // catch the error.
+            try {
+              // Ensure that the camera is initialized.
+              await _initializeControllerFuture;
 
-            // Attempt to take a picture and get the file `image`
-            // where it was saved.
-            final image = await _controller.takePicture();
-            if (!mounted) return;
+              // Attempt to take a picture and get the file `image`
+              // where it was saved.
+              final image = await _controller.takePicture();
+              if (!mounted) return;
 
-            Get.back(result: image.path);
-          } catch (e) {
-            // If an error occurs, log the error to the console.
-            print(e);
-          }
-        },
-        child: const Icon(Icons.camera_alt),
-      ),
-    );
+              Get.back(result: image.path);
+            } catch (e) {
+              // If an error occurs, log the error to the console.
+              print(e);
+            }
+          },
+          child: const Icon(Icons.camera_alt, color: Color.fromARGB(255, 224, 224, 224))),
+        ),
+      );
   }
 }

@@ -142,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (const MarkerIcon(        
           iconWidget: CircleAvatar(
               radius: 36,
-              backgroundColor: Color.fromARGB(247, 173, 47, 47),
+              backgroundColor: Color.fromARGB(247, 170, 11, 11),
               child: Icon(Icons.fmd_bad_outlined , size: 66, color: Color.fromARGB(255, 255, 255, 255),),
           )
         )));
