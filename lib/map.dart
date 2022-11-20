@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:get/get.dart';
+import 'camera.dart';
 
 // fetch from localhost and creat PointOfInterest from response.body
 Future<List<PointOfInterest>> fetchPointOfInterest()async{
@@ -24,7 +27,7 @@ Future<List<PointOfInterest>> predictImage() async{
     var list = json.decode(response.body);
     var pointOfInterestList = list.map<PointOfInterest>((json) => PointOfInterest.fromJson(json)).toList();
     return pointOfInterestList;
-  }else{
+  } else {
     throw Exception('Failed to load PointOfInterest');
   }
 }
@@ -52,14 +55,13 @@ class PointOfInterest{
     }
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
+  
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Wormhole Demo',
       theme: ThemeData(
 
@@ -126,17 +128,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 void helper(geoPoint) async {
-  var url = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/a4ed6cfa-732d-4bd4-bb98-6ea024bcea47/classify/iterations/Iteration1/url';
-  Future<http.Response> predict() {
+  var data = await availableCameras().then((value) async => 
+    await Get.to(MaterialApp(
+      theme: ThemeData.dark(),
+      home: TakePictureScreen(
+    // Pass the appropriate camera to the TakePictureScreen widget.
+    camera: value.first,
+  ))));
+
+
+  var url = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/a4ed6cfa-732d-4bd4-bb98-6ea024bcea47/classify/iterations/Iteration1/image';
+  Future<http.Response> predict() async {
     return http.post(
       Uri.parse(url),
       headers: <String, String>{
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/octet-stream',
         'Prediction-Key': '516b518763a849859a26aa982bd4b658'
         },
-      body: jsonEncode(<String, String>{
-        "Url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Garching_Bundesautobahn_9.jpg"
-      }),
+      body:  await File(data).readAsBytes()
     );
   }
   String tagName = "footway";

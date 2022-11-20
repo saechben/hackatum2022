@@ -7,11 +7,8 @@ import 'camera.dart';
 import 'map.dart';
 import 'leaderboard.dart';
 
-var cameras;
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+void main() {
   runApp(const CupertinoTabBarApp());
 }
 
@@ -43,11 +40,6 @@ class CupertinoTabBarExample extends StatelessWidget {
             icon: Icon(CupertinoIcons.rosette),
             label: 'Leaderboard',
           ),
-          // BottomNavigationBarItem for Camera
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.photo_camera),
-            label: 'Camera',
-          ),
         ],
       ),
       tabBuilder: (BuildContext context, int index) {
@@ -65,17 +57,9 @@ class CupertinoTabBarExample extends StatelessWidget {
   showPage(int index){
      switch(index){
       case 0:
-        return const MyApp();
+        return MyApp();
       case 1:
         return const Leaderboard();
-      case 2: {
-        return MaterialApp(
-      theme: ThemeData.dark(),
-      home: TakePictureScreen(
-              // Pass the appropriate camera to the TakePictureScreen widget.
-              camera: cameras.first,
-        ));
-      }
      }
   }
 }
