@@ -83,18 +83,59 @@ class Leaderboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(10.0),
-      children: <Widget>[
-        CustomListItemTwo(
-          username: 'Admin',
-          issuesSolved: 3000,
-        ),
-        CustomListItemTwo(
-          username: 'Joe',
-          issuesSolved: 2,
-        ),
-      ],
-    );
+    return            ListView(
+              children: [
+                ListTile(
+                  onTap: () => print('Tapped ListTileObject TheSun'),
+                  leading: Icon(Icons.sunny),
+                  title : Text('The Sun'),
+                  subtitle: Text('Fire'),
+                  trailing: Icon(Icons.arrow_right),
+                ),
+                ListTile(
+                  onTap: () => print('Tapped ListTileObject TheEarth'),
+                  leading: Icon(Icons.circle_sharp),
+                  title : Text('The Earth'),
+                  subtitle: Text('Life'),
+                  trailing: Icon(Icons.arrow_right),
+                ),
+                ListTile(
+                  onTap: () => print('Tapped ListTileObject TheMoon'),
+                  leading: Icon(Icons.shield_moon_rounded),
+                  title : Text('The Moon'),
+                  subtitle: Text('White Heart'),
+                  trailing: Icon(Icons.arrow_right),
+                ),
+                GestureDetector(
+                  onTap: () => print('Tapped CardObject GALAXY'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      child: SizedBox(
+                        height: 50,
+                        child: Row(
+                          children: [
+                            Text('GALAXY',style: TextStyle(fontWeight: FontWeight.bold)),
+                            Spacer(),
+                            Icon(Icons.more_vert_sharp)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => print('Tapped ContainerObject TheWaterland'),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 50,
+                      color: Colors.indigoAccent,
+                      child: Center(child: Text('WATERLAND',textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),)),
+                    ),
+                  ),
+                ),
+              ],
+            );
   }
 }
