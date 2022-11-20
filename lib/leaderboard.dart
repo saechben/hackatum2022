@@ -101,12 +101,12 @@ class Leaderboard extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       children: <Widget>[
         CustomListItemTwo(
-          username: 'Admin',
-          issuesSolved: 3000,
+          username: 'Earnie',
+          issuesSolved: 21,
         ),
         CustomListItemTwo(
-          username: 'Joe',
-          issuesSolved: 2,
+          username: 'János',
+          issuesSolved: 16,
         ),
       ],
     );

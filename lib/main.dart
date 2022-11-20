@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'map.dart';
-import 'leaderboard.dart';
+import 'leaderboardTest.dart';
 
 
 void main() {
@@ -45,9 +45,8 @@ class CupertinoTabBarExample extends StatelessWidget {
       tabBuilder: (BuildContext context, int index) {
         return CupertinoTabView(
           builder: (BuildContext context) {
-            return Center(
-              child: showPage(index)
-            );
+            return showPage(index);
+       
           },
         );
       },
@@ -59,7 +58,7 @@ class CupertinoTabBarExample extends StatelessWidget {
       case 0:
         return MyApp();
       case 1:
-        return const Leaderboard();
+        return LeaderBoardNew();
      }
   }
 }

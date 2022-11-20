@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:get/get.dart';
 import 'camera.dart';
+import 'usercard.dart';
+import 'package:flutter/cupertino.dart';
 
 // fetch from localhost and creat PointOfInterest from response.body
 Future<List<PointOfInterest>> fetchPointOfInterest()async{
@@ -96,6 +98,29 @@ class _MyHomePageState extends State<MyHomePage> {
       return time;
     }
 
+
+  void _showAlertDialog(BuildContext context, String highway) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text("Solved Issue"),
+        content: Text("Oh, this must be a ${highway}! Click 'Okay' to continue fixing your neighbourhood."),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            /// This parameter indicates this action is the default,
+            /// and turns the action's text to bold text.
+            isDefaultAction: true,
+            onPressed: () {
+              // incrementSolved();
+              Navigator.pop(context);
+            },
+            child: const Text('Okay'),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   initState() {
     // super.initState();
@@ -110,17 +135,21 @@ class _MyHomePageState extends State<MyHomePage> {
         markerIcon: pointOfInterest.userID != null ?
         (const MarkerIcon(
            iconWidget: CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
+              radius: 44,
+              backgroundColor: Color.fromARGB(247, 239, 239, 239),
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
+              ),
             )
         ))
         :
-        (const MarkerIcon(         
-          icon: Icon(
-            Icons.construction,
-            color: Color.fromARGB(255, 191, 32, 21),
-            size: 66,
-          ),
+        (const MarkerIcon(        
+          iconWidget: CircleAvatar(
+              radius: 36,
+              backgroundColor: Color.fromARGB(247, 173, 47, 47),
+              child: Icon(Icons.fmd_bad_outlined , size: 66, color: Color.fromARGB(255, 255, 255, 255),),
+          )
         )));
       }
     });
@@ -157,12 +186,15 @@ void helper(geoPoint) async {
     (unused) => {
       mapController.addMarker(geoPoint,markerIcon:const MarkerIcon(
            iconWidget: CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage("assets/images/thumb-1920-1069102.jpg"),
+              radius: 44,
+              backgroundColor: Color.fromARGB(247, 239, 239, 239),
+              child: Icon(Icons.account_circle, size: 66, color: Color.fromARGB(255, 0, 0, 0),),
             )
         ))
     }
   );
+
+
   
   // String email="admin@mail.com";
   // String password="admin12345";
@@ -177,7 +209,7 @@ void helper(geoPoint) async {
     body: jsonEncode(patchData),
   );}
 
-  createAlbum().then((resp) => {print(resp.body)});
+  createAlbum().then((resp) => {_showAlertDialog(context, tagName)});
 
 }
 
@@ -185,6 +217,7 @@ void helper(geoPoint) async {
   Widget build(BuildContext context) {
     return Stack(
           children: <Widget>[
+            
             OSMFlutter( 
               controller: mapController,
               trackMyPosition: true,
@@ -210,7 +243,7 @@ void helper(geoPoint) async {
                         icon: Icon(
                           Icons.person,
                           size: 80,
-                          color: Colors.brown,
+                          color: Color.fromARGB(255, 47, 13, 168),
                         ),
                       ),
                       roadColor: Colors.yellowAccent,
@@ -231,13 +264,18 @@ void helper(geoPoint) async {
                   Geolocator.getCurrentPosition().then((position) => {
                     distance2point(geoPoint, GeoPoint(latitude: position.latitude, longitude: position.longitude)).then((distance) => {
                       // print(distance),
-                      if(distance < 100){
+                      if(distance < 1000000){
                         helper(geoPoint)
                       }
                     })
                   });
                 },
-          ) 
+          ),
+          Positioned(
+            bottom: 60,
+            left: 10,
+            width: 340,
+            child:UserCard(), )
           ],
     );
   }
