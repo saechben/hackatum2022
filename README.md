@@ -12,6 +12,6 @@ Password: admin12345
 
 ### Short Instruction to run the backend
 ##### Inside backend folder: 
-1. create a virtual enviroment inside backend/venv
+1. create a virtual enviroment inside /backend
 1. install requirements.txt on the enviroment
-2. run django server via `py manage.py runserver`
+2. run django server via `py manage.py runserver` inside /backend/src
